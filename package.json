@@ -1,0 +1,16 @@
+{
+  "name": "todo-app",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.3",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
