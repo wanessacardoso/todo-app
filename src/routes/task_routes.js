@@ -2,8 +2,6 @@ const express = require('express');
 
 const tasks_routes = express.Router();
 
-const { getTask, isValidBody } = require('../middleware/task_middleware');
-
 const tasks = [
   { id: 1, description: 'Description 1', done: false },
   { id: 2, description: 'Description 2', done: true },
@@ -14,6 +12,32 @@ const tasks = [
 
 const generateId = () => {
   return tasks[tasks.length - 1].id + 1;
+}
+
+const isValidBody = (req, res, next) => {
+  let validFields = ['description', 'done'];
+
+  Object.keys(req.body).forEach(key => {
+
+    if (!validFields.includes(key)) {
+      return res.status(400).send({ error: 'Invalid body' });
+    }
+
+    if (req.body[key] === undefined) {
+      return res.status(400).send({ error: 'Missing fields' });
+    };
+  });
+  next();
+};
+
+const getTask = (req, res, next) => {
+  const { id } = req.params;
+  const task = tasks.find((task) => task.id == id);
+  if (!task) {
+    return res.status(404).send({ error: 'Task not found' });
+  };
+  req.task = task;
+  next();
 }
 
 tasks_routes.patch('/:id/complete', getTask, (req, res) => {
