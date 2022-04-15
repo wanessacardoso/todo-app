@@ -13,5 +13,19 @@ users_routes.get('/', (req, res) => {
 
     res.send(tasks);
 });
-  
+
+users_routes.post('/teste-post', (req, res) => {
+    res.send('Incluir um usuário');
+});
+
+users_routes.put('/teste-put/:id', (req, res) => {
+    res.send(`Editar o usuário ${req.params.id}`);
+});
+
+// Método patch...
+
+users_routes.delete('/teste-delete/:id', (req, res) => {
+    res.send(`Excluir o usuário ${req.params.id}`);
+});
+
 module.exports = users_routes;

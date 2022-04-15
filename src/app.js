@@ -6,7 +6,7 @@ app.use(express.json());
 const tasks_routes = require('./routes/task_routes');
 app.use('/tasks', tasks_routes);
 
-//criar a rota de usuários
+//Rota de usuários
 const users_routes = require('./routes/user_routes');
 app.use('/users', users_routes);
 
