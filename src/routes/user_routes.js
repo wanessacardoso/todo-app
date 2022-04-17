@@ -10,36 +10,75 @@ const users = [
     { id: 5, nome: 'Pedro', idade: 54, email: 'pedro@live.com', senha: '452893' },
 ];
 
-users_routes.post('/teste-post', (req, res) => {
-    const { id, nome, idade, email, senha } = req.body;
-    const user = { id, nome, idade, email, senha };
-    users.push(user);
-    return res.status(201).json(user);
+const generateId = () => {
+    return users[users.length - 1].id + 1;
+}
+
+const getUser = (req, res, next) => {
+    const { id } = req.params;
+    const user = users.find((user) => user.id == id);
+    if (!user) {
+      return res.status(404).send({ error: 'Usuário não encontrado' });
+    };
+    req.user = user;
+    next();
+}
+
+//Método POST
+users_routes.post('/', (req, res) => {
+    const { nome, idade, email, senha } = req.body;
+  
+    //Validações...
+    if (!nome) {
+      return res.status(400).send({ error: 'Forneça o nome' });
+    }
+  
+    const newUser = {
+      id: generateId(), nome, idade, email, senha
+    };
+
+    users.push(newUser);
+    res.status(201).json(newUser);
 });
 
+//Método GET
 users_routes.get('/', (req, res) => {
-    const allUsers = users;
-    return res.status(201).json(allUsers);
+    res.json(users);
+});
+  
+users_routes.get('/:id', getUser, (req, res) => {
+    const { user } = req;
+    res.json(user);
 });
 
-users_routes.get('/:user_id', (req, res) => {
-    const { user_id } = req.params;
-    const user = users.find((user) => user.id == user_id);
-    if (!user) res.status(404).json("Not found");
-    return res.status(201).json(user);
-});
-
-users_routes.put('/teste-put/:id', (req, res) => {
-    res.send(`Editar o usuário ${req.params.id}`);
-});
-
-// Método patch...
-
-// users_routes.delete('/teste-delete/:user_id', (req, res) => {
-//     const { user_id } = req.params;
-//     const filtroUsers = users.filter((user) => user.id == user_id);
-//     users = filtroUsers;
-//     return res.status(204).json("Deletado");
+//Método PUT...
+// users_routes.put('/:id', isValidBody, getUser, (req, res) => {
+//     const { task: foundTask } = req;
+  
+//     Object.assign(foundTask, req.body);
+  
+//     return res.send(foundTask);
 // });
 
+//Método Patch...
+users_routes.patch('/:id/complete', getUser, (req, res) => {
+    const { user } = req;
+    user.done = true;
+    return res.status(200).send(user);
+})
+
+//Método DELETE
+users_routes.delete('/:id', (req, res) => {
+    const { id } = req.params;
+    const userIndex = users.findIndex(user => user.id === parseInt(id));
+  
+    if (userIndex < 0) {
+      return res.status(404).send({ error: 'Usuario não encontrado' });
+    }
+  
+    users.splice(userIndex, 1);
+  
+    return res.status(204).send();
+});
+  
 module.exports = users_routes;
