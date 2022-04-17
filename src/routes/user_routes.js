@@ -2,20 +2,31 @@ const express = require('express');
 
 const users_routes = express.Router();
 
-users_routes.get('/', (req, res) => {
-    const tasks = [
-        { id: 1, nome: 'Maria', usuario: 'maria562', email: 'maria@gmail.com', senha: '526458' },
-        { id: 2, nome: 'Joao', usuario: 'joao159', email: 'joao@hotmail.com', senha: '452163' },
-        { id: 3, nome: 'Luiza', usuario: 'luiza369', email: 'luiza@hotmail.com', senha: '526548' },
-        { id: 4, nome: 'Mariana', usuario: 'mariana742', email: 'mariana@gmail.com', senha: '958632' },
-        { id: 5, nome: 'Pedro', usuario: 'pedro251', email: 'pedro@live.com', senha: '452893' },
-      ];
-
-    res.send(tasks);
-});
+const users = [
+    { id: 1, nome: 'Maria', idade: 15, email: 'maria@gmail.com', senha: '526458' },
+    { id: 2, nome: 'Joao', idade: 45, email: 'joao@hotmail.com', senha: '452163' },
+    { id: 3, nome: 'Luiza', idade: 28, email: 'luiza@hotmail.com', senha: '526548' },
+    { id: 4, nome: 'Mariana', idade: 36, email: 'mariana@gmail.com', senha: '958632' },
+    { id: 5, nome: 'Pedro', idade: 54, email: 'pedro@live.com', senha: '452893' },
+];
 
 users_routes.post('/teste-post', (req, res) => {
-    res.send('Incluir um usuário');
+    const { id, nome, idade, email, senha } = req.body;
+    const user = { id, nome, idade, email, senha };
+    users.push(user);
+    return res.status(201).json(user);
+});
+
+users_routes.get('/', (req, res) => {
+    const allUsers = users;
+    return res.status(201).json(allUsers);
+});
+
+users_routes.get('/:user_id', (req, res) => {
+    const { user_id } = req.params;
+    const user = users.find((user) => user.id == user_id);
+    if (!user) res.status(404).json("Not found");
+    return res.status(201).json(user);
 });
 
 users_routes.put('/teste-put/:id', (req, res) => {
@@ -24,8 +35,11 @@ users_routes.put('/teste-put/:id', (req, res) => {
 
 // Método patch...
 
-users_routes.delete('/teste-delete/:id', (req, res) => {
-    res.send(`Excluir o usuário ${req.params.id}`);
-});
+// users_routes.delete('/teste-delete/:user_id', (req, res) => {
+//     const { user_id } = req.params;
+//     const filtroUsers = users.filter((user) => user.id == user_id);
+//     users = filtroUsers;
+//     return res.status(204).json("Deletado");
+// });
 
 module.exports = users_routes;
