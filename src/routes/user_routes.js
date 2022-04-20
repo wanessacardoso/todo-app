@@ -73,7 +73,6 @@ users_routes.put('/:id', isValidBody, getUser, (req, res) => {
     return res.send(user);
 });
 
-//Método Patch...
 users_routes.patch('/:id/edit', getUser, (req, res) => {
     const { user } = req;
     const { email, senha } = req.body;
