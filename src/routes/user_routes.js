@@ -67,7 +67,6 @@ users_routes.get('/:id', getUser, (req, res) => {
     res.json(user);
 });
 
-// Método PUT...
 users_routes.put('/:id', isValidBody, getUser, (req, res) => {
     const { user } = req;
     Object.assign(user, req.body);
@@ -75,9 +74,15 @@ users_routes.put('/:id', isValidBody, getUser, (req, res) => {
 });
 
 //Método Patch...
-users_routes.patch('/:id/complete', getUser, (req, res) => {
+users_routes.patch('/:id/edit', getUser, (req, res) => {
     const { user } = req;
-    user.done = true;
+    const { email, senha } = req.body;
+    if (email) {
+      user.email = req.body.email;
+    }
+    if (senha) {
+      user.senha = req.body.senha;
+    }
     return res.status(200).send(user);
 })
 
