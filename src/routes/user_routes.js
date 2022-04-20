@@ -14,23 +14,40 @@ const generateId = () => {
     return users[users.length - 1].id + 1;
 }
 
+const isValidBody = (req, res, next) => {
+  let validFields = ['nome', 'idade', 'email', 'senha'];
+
+  Object.keys(req.body).forEach(key => {
+
+    if (!validFields.includes(key)) {
+      return res.status(400).send({ error: 'Invalid body' });
+    }
+
+    if (req.body[key] === undefined) {
+      return res.status(400).send({ error: 'Missing fields' });
+    };
+  });
+  next();
+};
+
 const getUser = (req, res, next) => {
     const { id } = req.params;
     const user = users.find((user) => user.id == id);
     if (!user) {
-      return res.status(404).send({ error: 'Usuário não encontrado' });
+      return res.status(404).send({ error: 'User not found' });
     };
     req.user = user;
     next();
 }
 
-//Método POST
-users_routes.post('/', (req, res) => {
+users_routes.post('/', isValidBody, (req, res) => {
     const { nome, idade, email, senha } = req.body;
-  
-    //Validações...
-    if (!nome) {
-      return res.status(400).send({ error: 'Forneça o nome' });
+
+    if (!(nome && email && senha)){
+      return res.status(400).send({ error: 'Fill in the fields' });
+    } 
+    if (idade < 0) {
+      return res.status(400).send({ error: 'Invalid Age' });
     }
   
     const newUser = {
@@ -41,7 +58,6 @@ users_routes.post('/', (req, res) => {
     res.status(201).json(newUser);
 });
 
-//Método GET
 users_routes.get('/', (req, res) => {
     res.json(users);
 });
@@ -51,14 +67,12 @@ users_routes.get('/:id', getUser, (req, res) => {
     res.json(user);
 });
 
-//Método PUT...
-// users_routes.put('/:id', isValidBody, getUser, (req, res) => {
-//     const { task: foundTask } = req;
-  
-//     Object.assign(foundTask, req.body);
-  
-//     return res.send(foundTask);
-// });
+// Método PUT...
+users_routes.put('/:id', isValidBody, getUser, (req, res) => {
+    const { user } = req;
+    Object.assign(user, req.body);
+    return res.send(user);
+});
 
 //Método Patch...
 users_routes.patch('/:id/complete', getUser, (req, res) => {
@@ -67,7 +81,6 @@ users_routes.patch('/:id/complete', getUser, (req, res) => {
     return res.status(200).send(user);
 })
 
-//Método DELETE
 users_routes.delete('/:id', (req, res) => {
     const { id } = req.params;
     const userIndex = users.findIndex(user => user.id === parseInt(id));
